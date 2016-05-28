@@ -16,6 +16,34 @@
     <div id="dimeBag"></div>
     <script type="text/babel">
 
+      var config = {
+        api_url: "api/"
+
+      };
+
+      function apiCall(data, onSuccess, onFailure){
+        $.ajax({
+          url: config.api_url,
+          dataType: 'json',
+          type: 'POST',
+          data: data,
+          cache: false,
+          success: function(data){
+            if(typeof data.status !== 'undefined' && data.status == 'OK'){
+              onSuccess(data);
+            } else {
+              console.error('API responded with error', data.message);
+              onFailure();
+            }
+          },
+          error: function(xhr, status, err) {
+            console.error('XHR failed', status, err.toString());
+            onFailure();
+          }.bind(this)
+        });
+
+      };
+
       var User = React.createClass({
         render: function() {
           return (
@@ -28,6 +56,7 @@
               </div>
             </div>
           );
+
         }
       });
 
@@ -43,18 +72,22 @@
               {userNodes}
             </div>
           );
+
         }
       });
 
       var NewUserForm = React.createClass({
         getInitialState: function() {
           return {nick: '', credit: ''};
+
         },
         handleNickChange: function(e) {
           this.setState({nick: e.target.value});
+
         },
         handleCreditChange: function(e) {
           this.setState({credit: e.target.value});
+
         },
         handleSubmit: function(e) {
           e.preventDefault();
@@ -65,6 +98,7 @@
           }
           this.props.onUserSubmit({nick: nick, credit: credit});
           this.setState({nick: '', credit: ''});
+
         },
         render: function() {
           return (
@@ -74,30 +108,25 @@
               <input type="submit" value="Save" />
             </form>
           );
+
         }
       });
 
       var DimeBag = React.createClass({
         getInitialState: function() {
           return {data: []};
+
         },
         loadUsersFromServer: function() {
-          //TODO
-          this.setState({data: [{id: 1, nick: "bionik", credit: 12.00}]});
-          return {data: [{id: 1, nick: "bionik", credit: 12.00}]};
-
-          //TODO
-          $.ajax({
-            url: this.props.api,
-            dataType: 'json',
-            cache: false,
-            success: function(data) {
-              this.setState({data: data});
+          apiCall(
+            {a: 'getUsers'},
+            function(data) {
+              //Update state
+              this.setState({data: data.users});
             }.bind(this),
-            error: function(xhr, status, err) {
-              console.error(this.props.api, status, err.toString());
+            function(){
             }.bind(this)
-          });
+          );
 
         },
         handleUserSubmit: function(user) {
@@ -108,24 +137,23 @@
           var newUsers = users.concat([user]);
           this.setState({data: newUsers});
 
-          $.ajax({
-            url: this.props.api,
-            dataType: 'json',
-            type: 'POST',
-            data: user,
-            success: function(data) {
-              this.setState({data: data});
+          apiCall(
+            {a: 'createUser', user: user},
+            function(data) {
+              //Update state
+              this.setState({data: data.users});
             }.bind(this),
-            error: function(xhr, status, err) {
+            function(){
+              //Revert state
               this.setState({data: users});
-              console.error(this.props.api, status, err.toString());
             }.bind(this)
-          });
+          );
 
         },
         componentDidMount: function() {
           this.loadUsersFromServer();
           setInterval(this.loadUsersFromServer, this.props.pollInterval);
+
         },
         render: function() {
           return (
@@ -135,11 +163,12 @@
               <NewUserForm onUserSubmit={this.handleUserSubmit} />
             </div>
           );
+
         }
       });
 
       ReactDOM.render(
-        <DimeBag api="/api/users" pollInterval={2000}/>,
+        <DimeBag pollInterval={2000}/>,
         document.getElementById('dimeBag')
       );
 
