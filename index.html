@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DimeBag</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>DimeBag</h1>
+      <p>Taking care of your munnies.</p>
+    </header>
+    <div id="dimeBag"></div>
+    <script type="text/babel">
+
+      var User = React.createClass({
+        render: function() {
+          return (
+            <div className="user">
+              <div className="nickName">
+                {this.props.nick}
+              </div>
+              <div className="credit">
+                {this.props.credit}
+              </div>
+            </div>
+          );
+        }
+      });
+
+      var UserList = React.createClass({
+        render: function() {
+          var userNodes = this.props.data.map(function(user) {
+            return (
+              <User key={user.id} nick={user.nick} credit={user.credit}></User>
+            );
+          });
+          return (
+            <div className="userList">
+              {userNodes}
+            </div>
+          );
+        }
+      });
+
+      var NewUserForm = React.createClass({
+        getInitialState: function() {
+          return {nick: '', credit: ''};
+        },
+        handleNickChange: function(e) {
+          this.setState({nick: e.target.value});
+        },
+        handleCreditChange: function(e) {
+          this.setState({credit: e.target.value});
+        },
+        handleSubmit: function(e) {
+          e.preventDefault();
+          var nick = this.state.nick.trim();
+          var credit = this.state.credit.trim();
+          if (!credit || !nick || credit == 0) {
+            return;
+          }
+          this.props.onUserSubmit({nick: nick, credit: credit});
+          this.setState({nick: '', credit: ''});
+        },
+        render: function() {
+          return (
+            <form className="newUserForm" onSubmit={this.handleSubmit}>
+              <input type="text" value={this.state.nick} placeholder="Your nickname" onChange={this.handleNickChange}/>
+              <input type="number" value={this.state.credit} placeholder="Initial credit" step="any" onChange={this.handleCreditChange}/>
+              <input type="submit" value="Save" />
+            </form>
+          );
+        }
+      });
+
+      var DimeBag = React.createClass({
+        getInitialState: function() {
+          return {data: []};
+        },
+        loadUsersFromServer: function() {
+          //TODO
+          this.setState({data: [{id: 1, nick: "bionik", credit: 12.00}]});
+          return {data: [{id: 1, nick: "bionik", credit: 12.00}]};
+
+          //TODO
+          $.ajax({
+            url: this.props.api,
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+              this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.api, status, err.toString());
+            }.bind(this)
+          });
+
+        },
+        handleUserSubmit: function(user) {
+          var users = this.state.data;
+          var users = this.state.data;
+          user.id = Date.now();
+
+          var newUsers = users.concat([user]);
+          this.setState({data: newUsers});
+
+          $.ajax({
+            url: this.props.api,
+            dataType: 'json',
+            type: 'POST',
+            data: user,
+            success: function(data) {
+              this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              this.setState({data: users});
+              console.error(this.props.api, status, err.toString());
+            }.bind(this)
+          });
+
+        },
+        componentDidMount: function() {
+          this.loadUsersFromServer();
+          setInterval(this.loadUsersFromServer, this.props.pollInterval);
+        },
+        render: function() {
+          return (
+            <div className="dimeBag">
+              <h2>Users</h2>
+              <UserList data={this.state.data} />
+              <NewUserForm onUserSubmit={this.handleUserSubmit} />
+            </div>
+          );
+        }
+      });
+
+      ReactDOM.render(
+        <DimeBag api="/api/users" pollInterval={2000}/>,
+        document.getElementById('dimeBag')
+      );
+
+    </script>
+  </body>
+</html>
