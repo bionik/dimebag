@@ -63,14 +63,29 @@
 
       //User React class
       var User = React.createClass({
+        onUpdate: function(){
+          console.log('onupdate');
+          this.props.onUpdate();
+        },
         handleCreditClick: function(e) {
           e.preventDefault();
           console.log('handleCreditClick for user '+this.props.nick+', id: '+this.props.userid);
 
-          var amount = prompt("Enter the amount of credit you paid", "");
+          var amount = prompt("Enter the amount of credit you want to add", "");
           if (amount != null) {
             if (parseFloat(amount) > 0) {
-              console.log('do apicall');
+
+              apiCall(
+                {a: 'addCredit', userid: this.props.userid, amount: amount},
+                function(data) {
+                  //Update state
+                  this.onUpdate();
+                }.bind(this),
+                function(){
+                  //Do nothing
+                }.bind(this)
+              );
+
             } else {
               alert("Sorry, couldn't parse the value entered.");
             }
@@ -78,9 +93,20 @@
           }
 
         },
-        handlePaymentAction: function(sum){
-          if(window.confirm('You are about to purchase an item for '+sum+'€ from the account of '+this.props.nick)){
-            console.log('do apicall');
+        handlePaymentAction: function(price){
+          if(window.confirm('You are about to purchase an item for '+price+'€ from the account of '+this.props.nick)){
+            apiCall(
+              {a: 'doPayment', userid: this.props.userid, price: price},
+              function(data) {
+                //Update state
+                alert('Payment OK!');
+                this.onUpdate();
+              }.bind(this),
+              function(){
+                //Do nothing
+                alert('Payment was NOT accepted! Check that you have balance left.');
+              }.bind(this)
+            );
           }
 
         },
@@ -106,10 +132,15 @@
 
       //Userlist React class
       var UserList = React.createClass({
+        handleUpdate: function(){
+          console.log('userlist handleUpdate');
+          this.props.onUpdate();
+        },
         render: function() {
+          var that = this;
           var userNodes = this.props.data.map(function(user) {
             return (
-              <User key={user.id} userid={user.id} nick={user.nick} credit={user.credit}></User>
+              <User key={user.id} userid={user.id} nick={user.nick} credit={user.credit} onUpdate={that.handleUpdate}></User>
             );
           });
           return (
@@ -209,7 +240,7 @@
           return (
             <div className="dimeBag">
               <h2>Users</h2>
-              <UserList data={this.state.data} />
+              <UserList data={this.state.data} onUpdate={this.loadUsersFromServer}/>
               <h2>Add an account</h2>
               <NewUserForm onUserSubmit={this.handleUserSubmit} />
             </div>

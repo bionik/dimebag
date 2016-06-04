@@ -66,20 +66,136 @@ if(isset($r['a']) && $r['a'] != ''){
 
   if($r['a'] == 'getUsers'){
 
-    //Respond with user data
-    $response['status'] = "OK";
-    $response['users'] = array(array('id'=>1, 'nick'=>'bionik', 'credit'=>12.00),array('id'=>2, 'nick'=>'netl', 'credit'=>16.00));
+    //Get users from db
+    $query = $db->prepare('SELECT id, nick, credit
+      FROM user;');
 
-  } else if($r['a'] == 'createUser' && isset($r['user'])) {
-    //TODO
-    $user = $r['user'];
-    if(isset($user['nick']) && trim($user['nick']) !== '' && isset($user['credit']));
+    $query->execute(array());
 
-    //Save user to db
+    $users = $query->fetchAll();
 
     //Respond with new user data
     $response['status'] = "OK";
-    $response['users'] = array(array('id'=>1, 'nick'=>'bionik', 'credit'=>12.00),array('id'=>2, 'nick'=>'netl', 'credit'=>16.00), array('id'=>3, 'nick'=>$user['nick'], 'credit'=>$user['credit']));
+    $response['users'] = $users;
+
+  } else if($r['a'] == 'createUser' && isset($r['user'])) {
+    $user = $r['user'];
+    if(isset($user['nick']) && trim($user['nick']) !== '' && isset($user['credit'])) {
+
+      //Save user to db
+      $query = $db->prepare('INSERT INTO user(nick, credit, created_at, last_updated)
+        VALUES (?, ?, ?, ?);');
+
+      try {
+        $query->execute(array($user['nick'], floatval($user['credit']), time(), 0));
+      } catch(PDOException $e) {
+        //On db connection error crash with an error message.
+        crash($e->getMessage());
+      }
+
+      //Get users from db
+      $query = $db->prepare('SELECT id, nick, credit
+        FROM user;');
+
+      $query->execute(array());
+
+      $users = $query->fetchAll();
+
+      //Respond with new user data
+      $response['status'] = "OK";
+      $response['users'] = $users;
+
+    }
+
+  } else if($r['a'] == 'addCredit' && isset($r['userid']) && isset($r['amount'])) {
+    $userid = (int)$r['userid'];
+    $amount = floatval($r['amount']);
+    if($userid !== 0 && $amount > 0) {
+
+      //Get current user and it's balance
+      $query = $db->prepare('SELECT credit FROM user WHERE id = ?;');
+
+      try {
+        $query->execute(array($userid));
+      } catch(PDOException $e) {
+        //On db connection error crash with an error message.
+        crash($e->getMessage());
+      }
+
+      $rows = $query->fetchAll();
+      if(count($rows) !== 1){
+        crash('USER_ID_DOES_NOT_EXIST');
+      }
+
+      $user = $rows[0];
+
+
+      //Calculate new credit
+      $new_credit = $user['credit'] + $amount;
+
+      //Save credit to db
+      $query = $db->prepare('UPDATE user
+        SET credit = ?
+        WHERE id = ?');
+
+      try {
+        $query->execute(array($new_credit, $userid));
+      } catch(PDOException $e) {
+        //On db connection error crash with an error message.
+        crash($e->getMessage());
+      }
+
+      //Respond with OK
+      $response['status'] = "OK";
+
+    }
+
+  } else if($r['a'] == 'doPayment' && isset($r['userid']) && isset($r['price'])) {
+    $userid = (int)$r['userid'];
+    $price = floatval($r['price']);
+    if($userid !== 0 && $price > 0) {
+
+      //Get current user and it's balance
+      $query = $db->prepare('SELECT credit FROM user WHERE id = ?;');
+
+      try {
+        $query->execute(array($userid));
+      } catch(PDOException $e) {
+        //On db connection error crash with an error message.
+        crash($e->getMessage());
+      }
+
+      $rows = $query->fetchAll();
+      if(count($rows) !== 1){
+        crash('USER_ID_DOES_NOT_EXIST');
+      }
+
+      $user = $rows[0];
+
+      //Calculate new credit
+      $new_credit = $user['credit'] - $price;
+
+      if($new_credit >= 0){
+        //Save credit to db
+        $query = $db->prepare('UPDATE user
+          SET credit = ?
+          WHERE id = ?');
+
+        try {
+          $query->execute(array($new_credit, $userid));
+        } catch(PDOException $e) {
+          //On db connection error crash with an error message.
+          crash($e->getMessage());
+        }
+
+        //Respond with OK
+        $response['status'] = "OK";
+
+      } else {
+        crash('NO_CREDIT');
+      }
+
+    }
 
   }
 
