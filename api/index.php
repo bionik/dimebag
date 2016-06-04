@@ -65,10 +65,22 @@ $r = $_REQUEST;
 if(isset($r['a']) && $r['a'] != ''){
 
   if($r['a'] == 'getUsers'){
+
+    //Respond with user data
     $response['status'] = "OK";
     $response['users'] = array(array('id'=>1, 'nick'=>'bionik', 'credit'=>12.00),array('id'=>2, 'nick'=>'netl', 'credit'=>16.00));
-  } else if($r['a'] == 'createUser'){
+
+  } else if($r['a'] == 'createUser' && isset($r['user'])) {
     //TODO
+    $user = $r['user'];
+    if(isset($user['nick']) && trim($user['nick']) !== '' && isset($user['credit']));
+
+    //Save user to db
+
+    //Respond with new user data
+    $response['status'] = "OK";
+    $response['users'] = array(array('id'=>1, 'nick'=>'bionik', 'credit'=>12.00),array('id'=>2, 'nick'=>'netl', 'credit'=>16.00), array('id'=>3, 'nick'=>$user['nick'], 'credit'=>$user['credit']));
+
   }
 
 }

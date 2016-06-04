@@ -7,6 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:700|Noto+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='css/main.css' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <header>
@@ -16,11 +18,13 @@
     <div id="dimeBag"></div>
     <script type="text/babel">
 
+      //Configuration variables
       var config = {
-        api_url: "api/"
-
+        api_url: "api/",
+        poll_interval: 10000
       };
 
+      //API call function
       function apiCall(data, onSuccess, onFailure){
         $.ajax({
           url: config.api_url,
@@ -44,15 +48,55 @@
 
       };
 
+      var BuyButton = React.createClass({
+        handleClick: function(e) {
+          e.preventDefault();
+          this.props.onPayment(this.props.amount);
+        },
+        render: function() {
+          return (
+            <button className="button-buy" onClick={this.handleClick}>{this.props.amount}€</button>
+          );
+
+        }
+      });
+
+      //User React class
       var User = React.createClass({
+        handleCreditClick: function(e) {
+          e.preventDefault();
+          console.log('handleCreditClick for user '+this.props.nick+', id: '+this.props.userid);
+
+          var amount = prompt("Enter the amount of credit you paid", "");
+          if (amount != null) {
+            if (parseFloat(amount) > 0) {
+              console.log('do apicall');
+            } else {
+              alert("Sorry, couldn't parse the value entered.");
+            }
+
+          }
+
+        },
+        handlePaymentAction: function(sum){
+          if(window.confirm('You are about to purchase an item for '+sum+'€ from the account of '+this.props.nick)){
+            console.log('do apicall');
+          }
+
+        },
         render: function() {
           return (
             <div className="user">
-              <div className="nickName">
+              <h3>
                 {this.props.nick}
-              </div>
+              </h3>
               <div className="credit">
-                {this.props.credit}
+                {parseFloat(this.props.credit).toFixed(2)}€
+              </div>
+              <div className="tools">
+                <button className="button-credit" onClick={this.handleCreditClick}>Add credit</button>
+                <BuyButton amount="1.50" onPayment={this.handlePaymentAction}/>
+                <BuyButton amount="1.00" onPayment={this.handlePaymentAction}/>
               </div>
             </div>
           );
@@ -60,11 +104,12 @@
         }
       });
 
+      //Userlist React class
       var UserList = React.createClass({
         render: function() {
           var userNodes = this.props.data.map(function(user) {
             return (
-              <User key={user.id} nick={user.nick} credit={user.credit}></User>
+              <User key={user.id} userid={user.id} nick={user.nick} credit={user.credit}></User>
             );
           });
           return (
@@ -76,6 +121,7 @@
         }
       });
 
+      //New user form React class
       var NewUserForm = React.createClass({
         getInitialState: function() {
           return {nick: '', credit: ''};
@@ -96,8 +142,11 @@
           if (!credit || !nick || credit == 0) {
             return;
           }
-          this.props.onUserSubmit({nick: nick, credit: credit});
-          this.setState({nick: '', credit: ''});
+
+          if(window.confirm('You are creating a new user '+nick+' with initial credit of '+credit+'€')){
+            this.props.onUserSubmit({nick: nick, credit: credit});
+            this.setState({nick: '', credit: ''});
+          }
 
         },
         render: function() {
@@ -112,6 +161,7 @@
         }
       });
 
+      //The React class for the app
       var DimeBag = React.createClass({
         getInitialState: function() {
           return {data: []};
@@ -160,6 +210,7 @@
             <div className="dimeBag">
               <h2>Users</h2>
               <UserList data={this.state.data} />
+              <h2>Add an account</h2>
               <NewUserForm onUserSubmit={this.handleUserSubmit} />
             </div>
           );
@@ -167,8 +218,9 @@
         }
       });
 
+      //Set up React
       ReactDOM.render(
-        <DimeBag pollInterval={2000}/>,
+        <DimeBag pollInterval={config.poll_interval}/>,
         document.getElementById('dimeBag')
       );
 

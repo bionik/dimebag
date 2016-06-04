@@ -1,0 +1,154 @@
+/*! Handmade by @b10nik */
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background: #303030;
+  padding: 20px;
+  color: #fdfdfd;
+
+  font-family: 'Noto Sans', sans-serif;
+}
+
+body * {
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+header, .userList, .newUserForm {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+.userList {
+
+  .user {
+    @extend .cf;
+    border: 1px solid #404040;
+    margin-bottom: 10px;
+    padding: 10px;
+
+    h3 {
+      display: inline-block;
+      font-size: 20px;
+      vertical-align: middle;
+      line-height: 36px;
+      padding-left: 8px;
+    }
+
+    .credit {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 20px;
+      vertical-align: middle;
+      line-height: 36px;
+    }
+
+    .tools {
+      display: inline-block;
+      float: right;
+      vertical-align: middle;
+
+      .button-credit {
+        background: transparent;
+        border: none;
+        color: #fdfdfd;
+        padding: 6px 10px;
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
+        font-size: 12px;
+        vertical-align: middle;
+      }
+
+      .button-buy {
+        background: transparent;
+        border: none;
+        color: #fdfdfd;
+        padding: 6px 10px;
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        vertical-align: middle;
+        border: 2px solid #fdfdfd;
+
+        &:hover {
+          background: #fdfdfd;
+          color: #303030;
+        }
+      }
+
+      button {
+        margin-left: 10px;
+      }
+
+
+    }
+  }
+}
+
+.newUserForm {
+  @extend .cf;
+  border: 1px solid #404040;
+  margin-bottom: 10px;
+  padding: 10px;
+
+  input[type="text"], input[type="number"] {
+    background: transparent;
+    border: none;
+    color: #fdfdfd;
+    padding: 3px 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: middle;
+    border: 2px solid #fdfdfd;
+    margin-right: 10px;
+  }
+  input[type="submit"] {
+    background: transparent;
+    border: none;
+    color: #fdfdfd;
+    padding: 6px 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: middle;
+    border: 2px solid #fdfdfd;
+    float: right;
+  }
+}
+
+.cf:before,
+.cf:after {
+    content: " ";
+    display: table;
+}
+
+.cf:after {
+    clear: both;
+}
