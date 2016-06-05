@@ -19,6 +19,8 @@ body {
   padding: 20px;
   color: #fdfdfd;
 
+  font-size: 16px;
+
   font-family: 'Noto Sans', sans-serif;
 }
 
@@ -37,7 +39,7 @@ h1 {
   margin-bottom: 5px;
 }
 
-header, .userList, .newUserForm {
+header, .userlist, .userform {
   margin-bottom: 20px;
 }
 
@@ -45,13 +47,18 @@ h2 {
   margin-bottom: 10px;
 }
 
-.userList {
+.userlist {
 
   .user {
     @extend .cf;
     border: 1px solid #404040;
     margin-bottom: 10px;
     padding: 10px;
+    background: #323232;
+
+    &:nth-child(even) {
+      background: #383838;
+    }
 
     h3 {
       display: inline-block;
@@ -74,7 +81,7 @@ h2 {
       float: right;
       vertical-align: middle;
 
-      .button-credit {
+      .add-credit {
         background: transparent;
         border: none;
         color: #fdfdfd;
@@ -83,9 +90,10 @@ h2 {
         font-weight: bold;
         font-size: 12px;
         vertical-align: middle;
+        margin-left: 0;
       }
 
-      .button-buy {
+      .use-credit {
         background: transparent;
         border: none;
         color: #fdfdfd;
@@ -111,9 +119,10 @@ h2 {
   }
 }
 
-.newUserForm {
+.userform {
   @extend .cf;
   border: 1px solid #404040;
+  background: #323232;
   margin-bottom: 10px;
   padding: 10px;
 
@@ -140,6 +149,59 @@ h2 {
     vertical-align: middle;
     border: 2px solid #fdfdfd;
     float: right;
+  }
+}
+
+@media (max-width: 600px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  .userlist {
+    .user {
+      text-align: center;
+      h3 {
+        font-size: 16px;
+      }
+
+      .credit {
+        font-size: 16px;
+        line-height: 24px;
+      }
+
+      .tools {
+        float: none;
+        margin-top: 10px;
+
+        .add-credit {
+          padding: 6px 2px;
+          font-size: 12px;
+        }
+
+        .use-credit {
+          padding: 6px 10px;
+          font-size: 14px;
+        }
+
+        button {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .userform {
+    input[type="text"], input[type="number"] {
+      font-size: 14px;
+
+    }
+    input[type="text"] {
+      margin-bottom: 10px;
+    }
+    input[type="submit"] {
+      font-size: 14px;
+    }
   }
 }
 
