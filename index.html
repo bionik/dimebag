@@ -181,7 +181,7 @@
 
             var nick = $(this).find('[name="nick"]').val().trim();
             var credit = $(this).find('[name="credit"]').val();
-            if (!credit || !nick || credit == 0) {
+            if (!nick || credit == '') {
               return;
             }
 
