@@ -33,7 +33,7 @@
       //Configuration variables
       var config = {
         api_url: "api/",
-        poll_interval: 10000
+        poll_interval: 5000
       };
 
       App = function(){
@@ -66,6 +66,7 @@
         };
 
         a.refreshUserList = function(onSuccess){
+          console.log('a.refreshUserList');
           a.apiCall(
             {a: 'getUsers'},
             function(data) {
@@ -75,7 +76,16 @@
                 users_html += a.renderUser(data.users[i]);
               }
               $('#user-list').html(users_html);
-              a.timer = window.setTimeout(a.refreshUserList, config.poll_interval);
+
+              if(a.timer !== false){
+                window.clearTimeout(a.timer);
+                a.timer = false;
+              }
+
+              a.timer = window.setTimeout(function(){
+                a.refreshUserList();
+              }, config.poll_interval);
+
               if(typeof onSuccess != "undefined") onSuccess();
             },
             function(){
