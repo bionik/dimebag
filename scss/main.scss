@@ -62,6 +62,8 @@ h2 {
 
     .meta {
       @extend .cf;
+      display: inline-block;
+
       h3 {
         display: inline-block;
         font-size: 20px;
@@ -94,6 +96,7 @@ h2 {
         font-size: 12px;
         vertical-align: middle;
         margin-left: 0;
+        text-decoration: underline;
       }
 
       .use-credit {
@@ -165,6 +168,7 @@ h2 {
     .user {
 
       .meta {
+        display: block;
         h3 {
           font-size: 16px;
           line-height: 24px;
