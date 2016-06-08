@@ -53,10 +53,31 @@ try {
     last_updated TEXT)"
   );
 
+  $db->exec("CREATE TABLE IF NOT EXISTS log(
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    entry_type TEXT,
+    credit REAL,
+    ts TEXT)"
+  );
+
 } catch(PDOException $e) {
   //On db connection error crash with an error message.
   crash($e->getMessage());
 
+}
+
+function log($user_id, $entry_type, $credit_change){
+  global $db;
+  $query = $db->prepare('INSERT INTO log(user_id, entry_type, credit, ts)
+    VALUES (?, ?, ?, ?);');
+
+  try {
+    $query->execute(array($user_id, $entry_type, $credit_change, time()));
+  } catch(PDOException $e) {
+    //On db connection error crash with an error message.
+    crash($e->getMessage());
+  }
 }
 
 //Shorthand for the request
@@ -92,6 +113,10 @@ if(isset($r['a']) && $r['a'] != ''){
         //On db connection error crash with an error message.
         crash($e->getMessage());
       }
+
+      $userid = $db->lastInsertId();
+
+      log($userid, 'CREATE_USER', floatval($user['credit']));
 
       //Get users from db
       $query = $db->prepare('SELECT id, nick, credit
@@ -135,15 +160,17 @@ if(isset($r['a']) && $r['a'] != ''){
 
       //Save credit to db
       $query = $db->prepare('UPDATE user
-        SET credit = ?
+        SET credit = ?, last_updated = ?
         WHERE id = ?');
 
       try {
-        $query->execute(array($new_credit, $userid));
+        $query->execute(array($new_credit, time(), $userid));
       } catch(PDOException $e) {
         //On db connection error crash with an error message.
         crash($e->getMessage());
       }
+
+      log($userid, 'ADD_CREDIT', $amount);
 
       //Respond with OK
       $response['status'] = "OK";
@@ -178,20 +205,25 @@ if(isset($r['a']) && $r['a'] != ''){
       if($new_credit >= 0){
         //Save credit to db
         $query = $db->prepare('UPDATE user
-          SET credit = ?
+          SET credit = ?, last_updated = ?
           WHERE id = ?');
 
         try {
-          $query->execute(array($new_credit, $userid));
+          $query->execute(array($new_credit, time(), $userid));
         } catch(PDOException $e) {
           //On db connection error crash with an error message.
           crash($e->getMessage());
         }
 
+        log($userid, 'USE_CREDIT', $price);
+
         //Respond with OK
         $response['status'] = "OK";
 
       } else {
+
+        log($userid, 'NO_CREDIT', $price);
+
         crash('NO_CREDIT');
       }
 
