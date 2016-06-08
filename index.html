@@ -45,10 +45,10 @@
         a.timer = false;
 
         a.handleHash = function(){
-          console.log('a.handleHash');
+          //console.log('a.handleHash');
           if(window.location.hash.length > 1){
             var hash = window.location.hash.substr(1);
-            console.log(hash);
+            //console.log(hash);
             if($('#user-hider').length > 0){
               $('#user-hider').remove();
             }
@@ -90,7 +90,7 @@
         };
 
         a.refreshUserList = function(onSuccess){
-          console.log('a.refreshUserList');
+          //console.log('a.refreshUserList');
           a.apiCall(
             {a: 'getUsers'},
             function(data) {
@@ -106,9 +106,9 @@
                 a.timer = false;
               }
 
-              /*a.timer = window.setTimeout(function(){
+              a.timer = window.setTimeout(function(){
                 a.refreshUserList();
-              }, config.poll_interval);*/
+              }, config.poll_interval);
 
               if(typeof onSuccess != "undefined") onSuccess();
             },
