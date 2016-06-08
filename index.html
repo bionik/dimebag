@@ -44,6 +44,28 @@
 
         a.timer = false;
 
+        a.handleHash = function(){
+          console.log('a.handleHash');
+          if(window.location.hash.length > 1){
+            var hash = window.location.hash.substr(1);
+            console.log(hash);
+            if($('#user-hider').length > 0){
+              $('#user-hider').remove();
+            }
+            var style = $('<style type="text/css" id="user-hider">.userlist .user { display: none; } .userlist .user[data-nick="'+hash+'"] { display: block; }</style>');
+            $('head').append($(style));
+          }
+        };
+
+        if(window.location.hash !== ''){
+          a.handleHash();
+        }
+
+        $(window).on('hashchange', function() {
+          a.handleHash();
+        });
+
+
         //API call function
         a.apiCall = function(data, onSuccess, onFailure){
           $.ajax({
@@ -84,9 +106,9 @@
                 a.timer = false;
               }
 
-              a.timer = window.setTimeout(function(){
+              /*a.timer = window.setTimeout(function(){
                 a.refreshUserList();
-              }, config.poll_interval);
+              }, config.poll_interval);*/
 
               if(typeof onSuccess != "undefined") onSuccess();
             },
@@ -102,8 +124,10 @@
 
         a.renderUser = function(user){
           return '<div class="user" data-id="'+user.id+'" data-nick="'+user.nick+'">'+
-            '<h3>'+user.nick+'</h3>'+
-            '<div class="credit">'+parseFloat(user.credit).toFixed(2)+'€</div>'+
+            '<div class="meta">'+
+              '<h3>'+user.nick+'</h3>'+
+              '<div class="credit">'+parseFloat(user.credit).toFixed(2)+'€</div>'+
+            '</div>'+
             '<div class="tools">'+
               '<button class="add-credit" role="add-credit">Add credit</button>'+
               '<button class="use-credit" role="use-credit" data-amount="0.50">0.50€</button>'+
