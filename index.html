@@ -46,12 +46,14 @@
 
         a.handleHash = function(){
           //console.log('a.handleHash');
+          if($('#user-hider').length > 0){
+            $('#user-hider').remove();
+          }
+
           if(window.location.hash.length > 1){
             var hash = window.location.hash.substr(1);
             //console.log(hash);
-            if($('#user-hider').length > 0){
-              $('#user-hider').remove();
-            }
+
             var style = $('<style type="text/css" id="user-hider">.userlist .user { display: none; } .userlist .user[data-nick="'+hash+'"] { display: block; }</style>');
             $('head').append($(style));
           }
@@ -117,7 +119,9 @@
                 window.clearTimeout(a.timer);
                 a.timer = false;
               }
-              alert('Something went wrong, sorry!');
+
+              swal("Oops!", "Something went wrong, sorry!", "error");
+
             }
           );
         };
@@ -139,46 +143,79 @@
 
         a.handlePaymentAction = function(user, price){
 
-          if(window.confirm('You are about to purchase an item for '+price+'€ from the account of '+user.nick)){
-            a.apiCall(
-              {a: 'doPayment', userid: user.id, price: price},
-              function(data) {
-                //Update state
-                a.refreshUserList(function(){
-                  //alert('Payment OK!');
-                });
-              },
-              function(){
-                //Do nothing
-                alert('Payment was NOT accepted! Check that you have balance left.');
-              }
-            );
-          }
+          swal(
+            {
+              title: "Are you sure?",
+              text: 'Purchase an item for '+price+'€ from the account of '+user.nick,
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Purchase",
+              closeOnConfirm: false
+            }, function(){
 
-        };
-
-        a.handleCreditAction = function(user){
-          var amount = prompt("Enter the amount of credit you want to add", "");
-
-          if (amount != null) {
-            if (parseFloat(amount) > 0) {
               a.apiCall(
-                {a: 'addCredit', userid: user.id, amount: amount},
-                function(data){
+                {a: 'doPayment', userid: user.id, price: price},
+                function(data) {
                   //Update state
                   a.refreshUserList(function(){
-                    //alert('Credit was added!');
+                    //alert('Payment OK!');
+                    swal.close();
                   });
                 },
                 function(){
                   //Do nothing
+                  swal("No credit left!", "Payment was not accepted", "error");
                 }
               );
 
-            } else {
-              alert("Sorry, couldn't parse the value entered.");
             }
-          }
+          );
+
+        };
+
+        a.handleCreditAction = function(user){
+
+          swal(
+            {
+              title: "Add credit",
+              text: "Enter the amount of credit you want to add",
+              type: "input",
+              showCancelButton: true,
+              closeOnConfirm: false,
+              inputPlaceholder: "Amount"
+            },
+            function(inputValue){
+
+              if (inputValue === false) return false;
+
+              if (inputValue === "") {
+                swal.showInputError("You need to insert the amount!");
+                return false;
+              }
+
+              if (parseFloat(inputValue) > 0) {
+                a.apiCall(
+                  {a: 'addCredit', userid: user.id, amount: inputValue},
+                  function(data){
+                    //Update state
+                    a.refreshUserList(function(){
+                      //alert('Credit was added!');
+                      swal("Thank you!", "Credit was added", "success");
+                    });
+                  },
+                  function(){
+                    swal("Oops!", "Something went wrong, sorry!", "error");
+                  }
+                );
+
+              } else {
+                swal.showInputError("Could not parse the amount! Check the input");
+                return false;
+              }
+
+            }
+          );
 
         };
 
@@ -216,16 +253,31 @@
           $('#user-form').on('submit', function(e){
             e.preventDefault();
 
+            var form = this;
+
             var nick = $(this).find('[name="nick"]').val().trim();
             var credit = $(this).find('[name="credit"]').val();
             if (!nick || credit == '') {
               return;
             }
 
-            if(window.confirm('You are creating a new user '+nick+' with initial credit of '+credit+'€')){
+
+            swal(
+            {
+              title: "Are you sure?",
+              text: 'You are creating a new user '+nick+' with initial credit of '+credit+'€',
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Create user",
+              closeOnConfirm: true
+            }, function(){
+
               a.createUser({nick: nick, credit: credit});
-              $(this).get(0).reset();
+              $(form).get(0).reset();
+
             }
+          );
 
           });
 

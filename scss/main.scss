@@ -230,6 +230,58 @@ h2 {
   }
 }
 
+.sweet-alert {
+  background: #333;
+  font-family: 'Noto Sans', sans-serif;
+
+  h2 {
+    color: #fdfdfd;
+  }
+
+  p {
+    color: #fdfdfd;
+  }
+
+  input {
+    background: #282828;
+    border: none;
+    color: #fdfdfd;
+    outline: none;
+  }
+
+  button.cancel {
+    background-color: #484848;
+    &:hover {
+      background-color: #505050;
+    }
+  }
+
+  input:focus {
+    box-shadow: none;
+    border: none;
+    outline: none;
+    color: #fdfdfd;
+  }
+
+  .sa-error-container {
+    background-color: #282828;
+  }
+
+  .sa-input-error {
+    top: 23px;
+    right: 16px;
+  }
+
+  .sa-icon.sa-success::before, .sa-icon.sa-success::after {
+    background: #333;
+  }
+
+  .sa-icon.sa-success .sa-fix {
+    background-color: #333;
+  }
+
+}
+
 .cf:before,
 .cf:after {
     content: " ";
