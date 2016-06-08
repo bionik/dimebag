@@ -1,12 +1,12 @@
 <?php
-//API for :DimeBag
+//API for DimeBag
 
 //Design principles of this API architechture:
 //Always respond in JSON
 //Response data is stored on the $response variable. If response status is not set, show an error
 //On succesful operation, set status as OK, on failure set status as FAIL
 
-//:DimeBag specific principles:
+//DimeBag specific principles:
 //Action is chosen with the a (action) parameter of the request
 
 //Disable caching
@@ -67,7 +67,7 @@ try {
 
 }
 
-function log($user_id, $entry_type, $credit_change){
+function dblog($user_id, $entry_type, $credit_change){
   global $db;
   $query = $db->prepare('INSERT INTO log(user_id, entry_type, credit, ts)
     VALUES (?, ?, ?, ?);');
@@ -116,7 +116,7 @@ if(isset($r['a']) && $r['a'] != ''){
 
       $userid = $db->lastInsertId();
 
-      log($userid, 'CREATE_USER', floatval($user['credit']));
+      dblog($userid, 'CREATE_USER', floatval($user['credit']));
 
       //Get users from db
       $query = $db->prepare('SELECT id, nick, credit
@@ -170,7 +170,7 @@ if(isset($r['a']) && $r['a'] != ''){
         crash($e->getMessage());
       }
 
-      log($userid, 'ADD_CREDIT', $amount);
+      dblog($userid, 'ADD_CREDIT', $amount);
 
       //Respond with OK
       $response['status'] = "OK";
@@ -215,16 +215,17 @@ if(isset($r['a']) && $r['a'] != ''){
           crash($e->getMessage());
         }
 
-        log($userid, 'USE_CREDIT', $price);
+        dblog($userid, 'USE_CREDIT', $price);
 
         //Respond with OK
         $response['status'] = "OK";
 
       } else {
 
-        log($userid, 'NO_CREDIT', $price);
+        dblog($userid, 'NO_CREDIT', $price);
 
         crash('NO_CREDIT');
+
       }
 
     }
