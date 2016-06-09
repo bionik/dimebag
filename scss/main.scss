@@ -113,11 +113,6 @@ h2 {
         font-size: 20px;
         vertical-align: middle;
         border: 2px solid #fdfdfd;
-
-        &:hover {
-          background: #fdfdfd;
-          color: #303030;
-        }
       }
 
       .other-sum {
@@ -133,6 +128,8 @@ h2 {
     }
   }
 }
+
+
 
 .userform {
   @extend .cf;
@@ -165,6 +162,31 @@ h2 {
     border: 2px solid #fdfdfd;
     float: right;
   }
+}
+
+@media (hover) {
+
+  .sweet-alert {
+    button.cancel {
+      &:hover {
+        background-color: #505050;
+      }
+    }
+  }
+
+  .userlist {
+    .user {
+      .tools {
+        .use-credit {
+          &:hover {
+            background: #fdfdfd;
+            color: #303030;
+          }
+        }
+      }
+    }
+  }
+
 }
 
 @media (max-width: 600px) {
@@ -271,9 +293,6 @@ h2 {
 
   button.cancel {
     background-color: #484848;
-    &:hover {
-      background-color: #505050;
-    }
   }
 
   input:focus {
