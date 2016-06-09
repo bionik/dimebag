@@ -194,8 +194,8 @@
 
               if (inputValue === false) return false;
 
-              inputValue = inputValue.trim;
-
+              inputValue = inputValue.trim();
+              inputValue = inputValue.replace(' ', '');
               inputValue = inputValue.replace(',', '.');
 
               if (inputValue === "") {
@@ -243,8 +243,8 @@
 
               if (inputValue === false) return false;
 
-              inputValue = inputValue.trim;
-
+              inputValue = inputValue.trim();
+              inputValue = inputValue.replace(' ', '');
               inputValue = inputValue.replace(',', '.');
 
               if (inputValue === "") {
