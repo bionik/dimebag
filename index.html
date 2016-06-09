@@ -195,8 +195,8 @@
               if (inputValue === false) return false;
 
               inputValue = inputValue.trim();
-              inputValue = inputValue.replace(' ', '');
-              inputValue = inputValue.replace(',', '.');
+              inputValue = inputValue.replace(/,/g, '.');
+              inputValue = inputValue.replace(/ /g, '');
 
               if (inputValue === "") {
                 swal.showInputError("You need to insert the amount!");
@@ -244,8 +244,8 @@
               if (inputValue === false) return false;
 
               inputValue = inputValue.trim();
-              inputValue = inputValue.replace(' ', '');
-              inputValue = inputValue.replace(',', '.');
+              inputValue = inputValue.replace(/,/g, '.');
+              inputValue = inputValue.replace(/ /g, '');
 
               if (inputValue === "") {
                 swal.showInputError("You need to insert the amount!");
