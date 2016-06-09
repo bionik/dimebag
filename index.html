@@ -135,9 +135,10 @@
             '<div class="meta">'+
               '<h3>'+user.nick+'</h3>'+
               '<div class="credit">'+parseFloat(user.credit).toFixed(2)+'€</div>'+
+              '<button class="add-credit" role="add-credit">Add credit</button>'+
             '</div>'+
             '<div class="tools">'+
-              '<button class="add-credit" role="add-credit">Add credit</button>'+
+              '<button class="use-credit other-sum" role="other-sum">other sum</button>'+
               '<button class="use-credit" role="use-credit" data-amount="0.50">0.50€</button>'+
               '<button class="use-credit" role="use-credit" data-amount="1.00">1.00€</button>'+
               '<button class="use-credit" role="use-credit" data-amount="2.00">2.00€</button>'+
@@ -172,6 +173,51 @@
                   swal("No credit left!", "Payment was not accepted", "error");
                 }
               );
+
+            }
+          );
+
+        };
+
+        a.handleOtherSumAction = function(user){
+
+          swal(
+            {
+              title: "Other sum",
+              text: "Enter the amount you want to pay",
+              type: "input",
+              showCancelButton: true,
+              closeOnConfirm: false,
+              inputPlaceholder: "Amount"
+            },
+            function(inputValue){
+
+              if (inputValue === false) return false;
+
+              if (inputValue === "") {
+                swal.showInputError("You need to insert the amount!");
+                return false;
+              }
+
+              if (parseFloat(inputValue) > 0) {
+                a.apiCall(
+                  {a: 'doPayment', userid: user.id, price: inputValue},
+                  function(data){
+                    //Update state
+                    a.refreshUserList(function(){
+                      //alert('Credit was removed!');
+                      swal.close();
+                    });
+                  },
+                  function(){
+                    swal("Oops!", "Something went wrong, sorry!", "error");
+                  }
+                );
+
+              } else {
+                swal.showInputError("Could not parse the amount! Check the input");
+                return false;
+              }
 
             }
           );
@@ -251,6 +297,13 @@
             e.preventDefault();
             var user = $(this).closest('.user');
             a.handleCreditAction({id: $(user).data('id'), nick: $(user).data('nick')});
+          });
+
+          //Add other sum click action
+          $(document).on('click', '[role="other-sum"]', function(e){
+            e.preventDefault();
+            var user = $(this).closest('.user');
+            a.handleOtherSumAction({id: $(user).data('id'), nick: $(user).data('nick')});
           });
 
           //Form submit
