@@ -194,6 +194,10 @@
 
               if (inputValue === false) return false;
 
+              inputValue = inputValue.trim;
+
+              inputValue = inputValue.replace(',', '.');
+
               if (inputValue === "") {
                 swal.showInputError("You need to insert the amount!");
                 return false;
@@ -238,6 +242,10 @@
             function(inputValue){
 
               if (inputValue === false) return false;
+
+              inputValue = inputValue.trim;
+
+              inputValue = inputValue.replace(',', '.');
 
               if (inputValue === "") {
                 swal.showInputError("You need to insert the amount!");
