@@ -368,6 +368,8 @@ body.stop-scrolling {
 /*
  * Animations
  */
+
+ /*
 @-webkit-keyframes showSweetAlert {
   0% {
     transform: scale(0.7);
@@ -491,6 +493,7 @@ body.stop-scrolling {
 .hideSweetAlert[data-animation=slide-from-bottom] {
   -webkit-animation: slideToBottom 0.3s;
   animation: slideToBottom 0.3s; }
+*/
 
 @-webkit-keyframes animateSuccessTip {
   0% {
@@ -731,20 +734,20 @@ body.stop-scrolling {
 /* This file is automatically merged into sweet-alert.min.js through Gulp */
 /* Error icon */
 .sweet-alert .sa-icon.sa-error .sa-line.sa-left {
-  -ms-transform: rotate(45deg) \9; }
+  -ms-transform: rotate(45deg); }
 
 .sweet-alert .sa-icon.sa-error .sa-line.sa-right {
-  -ms-transform: rotate(-45deg) \9; }
+  -ms-transform: rotate(-45deg); }
 
 /* Success icon */
 .sweet-alert .sa-icon.sa-success {
-  border-color: transparent\9; }
+  border-color: transparent; }
 
 .sweet-alert .sa-icon.sa-success .sa-line.sa-tip {
-  -ms-transform: rotate(45deg) \9; }
+  -ms-transform: rotate(45deg); }
 
 .sweet-alert .sa-icon.sa-success .sa-line.sa-long {
-  -ms-transform: rotate(-45deg) \9; }
+  -ms-transform: rotate(-45deg); }
 
 /*!
  * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
